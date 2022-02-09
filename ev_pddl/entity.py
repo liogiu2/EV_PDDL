@@ -1,4 +1,5 @@
 from ev_pddl.types import Type
+from ev_pddl.utilities import parse_json
 
 
 class Entity:
