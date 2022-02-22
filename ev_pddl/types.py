@@ -1,4 +1,14 @@
 class Type:
+    """
+    This class is used to represent PDDL types.
+
+    Attributes
+    ----------
+    name : String
+        Name of the type
+    extend : Type
+        Type that the current type extends
+    """
 
     def __init__(self, name, extend):
         self.name = name
@@ -17,6 +27,14 @@ class Type:
         return "Type: %s" % (self.name)
     
     def get_list_extensions(self):
+        """
+        This method is used to get the list of the extensions of the type.
+
+        Returns
+        -------
+        List
+            List of the extensions of the type
+        """
         extensions = []
         extensions.append(self.name)
         if self.name != 'object':

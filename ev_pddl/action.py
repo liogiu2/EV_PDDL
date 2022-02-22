@@ -177,6 +177,21 @@ class Action:
     #     dict_action_components = PDDL_Parser(nodomain=True).parse_incoming_action(action_string)
 
     #     return None
+
+    def find_parameters_with_type(self, type):
+        """
+        This method is used to find with entity of the parameters has a specific type
+
+        Parameters
+        ----------
+        type : String
+            Type of the entity
+
+        Returns
+        -------
+        List
+            List of the entity that has the type
+        """
+        return_list = [self.__parameters[item] for item in self.__parameters.keys() if type in self.__parameters[item].type.get_list_extensions()]
+        return return_list       
     
-            
-        
