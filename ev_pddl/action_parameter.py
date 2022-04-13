@@ -26,4 +26,4 @@ class ActionParameter:
         String
             PDDL representation of the action parameter
         """
-        return '%s'%(self.name)
+        return '%s - %s'%(self.name, self.type.to_PDDL())

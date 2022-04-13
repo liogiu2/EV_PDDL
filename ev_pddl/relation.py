@@ -117,18 +117,22 @@ class Relation:
         string: str
             The PDDL string of the relation.
         """
-        string = self.predicate.name + " "
+        string = "(" 
+        if self.value == RelationValue.FALSE:
+            string += "not "
+        string += self.predicate.name + " "
         for item in self.entities:
-            string += item.to_PDDL() + " "
-        string += "= "
-        if self.value == RelationValue.TRUE:
-            string += "TRUE"
-        elif self.value == RelationValue.FALSE:
-            string += "FALSE"
-        elif self.value == RelationValue.PENDING_TRUE:
-            string += "PENDING_TRUE"
-        elif self.value == RelationValue.PENDING_FALSE:
-            string += "PENDING_FALSE"
+            string += item.to_PDDL_for_relation() + " "
+        string = string[:-1] + ")"
+        # string += "= "
+        # if self.value == RelationValue.TRUE:
+        #     string += "TRUE"
+        # elif self.value == RelationValue.FALSE:
+        #     string += "FALSE"
+        # elif self.value == RelationValue.PENDING_TRUE:
+        #     string += "PENDING_TRUE"
+        # elif self.value == RelationValue.PENDING_FALSE:
+        #     string += "PENDING_FALSE"
         return string
 
 

@@ -293,3 +293,26 @@ class WorldState:
         for item in self.__relations:
             string += "\t%s\n " % (str(item))
         return string
+    
+    def to_PDDL(self) -> str:
+        """A method that is used to convert the worldstate to PDDL.
+
+        Returns
+        -------
+        string
+            string that contains the PDDL representation of the worldstate
+        """
+        string = "(define (problem currentEnvironment)\n"
+        string += "\t(:domain %s)\n" % (self.__domain.name)
+        string += "\t(:objects\n"
+        for item in self.__entities:
+            string += "%s\n" % (item.to_PDDL())
+        string += ")\n"
+        string += "\t(:init\n"
+        for item in self.__relations:
+            string += "%s\n" % (item.to_PDDL())
+        string += "\t)\n"
+        string += "\t(:goal\n"
+        string += "\t)\n"
+        string += ")"
+        return string

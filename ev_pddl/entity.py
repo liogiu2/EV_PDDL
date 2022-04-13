@@ -55,4 +55,14 @@ class Entity:
         String
             PDDL representation of the entity
         """
+        return '%s - %s' % (self.name, self.type.to_PDDL())
+    
+    def to_PDDL_for_relation(self):
+        """A method that is used to transform the entity to PDDL for the relation
+
+        Returns
+        -------
+        String
+            PDDL representation of the entity
+        """
         return '%s' % (self.name)

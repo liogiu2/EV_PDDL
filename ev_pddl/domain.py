@@ -174,5 +174,64 @@ class Domain:
             self.actions == other.actions
         )
     
+    def to_PDDL(self) -> str:
+        """
+        This method is used to create the PDDL representation of the Domain
+
+        Returns
+        -------
+        str
+            The PDDL representation of the Domain
+        """
+        string = '(define (domain ' + self.domain_name + ')\n'
+        string += '\t(:requirements :typing :negative-preconditions :universal-preconditions)\n'
+        string += self._get_types_for_PDDL()
+        string += '\t' + '(:predicates ' + '\n'
+        for item in self.predicates:
+            string += '\t\t' + item.to_PDDL() + '\n'
+        string += '\t)\n'
+        string += '\t' + ':(actions ' + '\n'
+        for item in self.actions:
+            string += '\t\t' + item.to_PDDL() + '\n'
+        string += '\t)\n'
+        string += ')'
+        return string
+    
+    def _get_types_for_PDDL(self):
+        """
+        This method is used to create the PDDL representation of the types
+
+        Returns
+        -------
+        str
+            The PDDL representation of the types
+        """
+        string = ''
+        dict_types = {
+            'object': []
+        }
+        for item in self.types:
+            dict_types[item.name] = []
+        for item in self.types:
+            listoftypes = item.get_list_extensions()
+            previous_type = item.name
+            for type_ext in listoftypes:
+                if type_ext == item.name:
+                    continue
+                if previous_type not in dict_types[type_ext]:
+                    dict_types[type_ext].append(previous_type)
+                previous_type = type_ext
+        # Remove keys with empy list as value
+        dict_types_new = {k:v for k,v in dict_types.items() if len(v) > 0}
+        string += '\t(:types\n'
+        for key, value in dict_types_new.items():
+            for item in value:
+                string += item + ' '
+            if key != 'object':
+                string += '- ' + key
+            string += '\n'
+        string += ')\n'
+
+        return string
     
     

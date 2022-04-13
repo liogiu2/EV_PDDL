@@ -1,3 +1,6 @@
+from ev_pddl.predicate import Predicate
+
+
 class ActionProposition:
 
     def __init__(self, name, parameters, argument = None):
@@ -46,12 +49,13 @@ class ActionProposition:
         return_string = ""
         if self.name == 'forall':
             return_string += "( forall ("
-            return_string += self.argument.name+ " - " +self.argument.type.name +') : '
+            return_string += self.argument.name+ " - " +self.argument.type.name +')'
         else:
             return_string += "(" + self.name + " "
         for item in self.parameters:
-            return_string += "("
-            return_string += item.to_PDDL()
-            return_string += ")"
+            if type(item) is Predicate:
+                return_string += item.to_PDDL_for_action_proposition() + "\n"
+            elif type(item) is ActionProposition:
+                return_string += item.to_PDDL() + "\n"
         return_string += ")"
         return return_string

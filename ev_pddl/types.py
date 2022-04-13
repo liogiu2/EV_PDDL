@@ -42,5 +42,16 @@ class Type:
             for item in list_ext:
                 extensions.append(item)
         return extensions
+    
+    def to_PDDL(self):
+        """
+        This method is used to transform the type to PDDL.
+
+        Returns
+        -------
+        String
+            PDDL representation of the type
+        """
+        return '%s' % (self.name)
 
     

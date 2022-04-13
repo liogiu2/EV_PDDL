@@ -42,3 +42,44 @@ class Predicate:
             if item.name == type:
                 return item
         return None
+    
+    def to_PDDL(self):
+        """
+        Method that is used to convert a predicate to a PDDL string.
+
+        Returns:
+        --------
+        string: str
+            The PDDL string of the predicate.
+        """
+        string = "(" 
+        string += self.name
+        list_types = []
+        n = 1
+        for item in self.arguments:
+            pddl = item.to_PDDL()
+            if item.name in list_types:
+                string += " ?" + pddl[:1] + str(n)+ " - "
+                n += 1
+            else:
+                string += " ?" + pddl[:1] + " - "
+                list_types.append(item.name)
+            string += pddl
+        string += ")"
+        return string
+
+    def to_PDDL_for_action_proposition(self):
+        """
+        Method that is used to convert a predicate to a PDDL string.
+
+        Returns:
+        --------
+        string: str
+            The PDDL string of the predicate.
+        """
+        string = "(" 
+        string += self.name
+        for item in self.arguments:
+            string += " " + item.name
+        string += ")"
+        return string

@@ -1,6 +1,9 @@
 import json
 import importlib.resources as pkg_resources
-import json_data
+try:
+    import json_data
+except ModuleNotFoundError:
+    from ev_pddl import json_data
 
 def parse_json(jsonfile):
     with pkg_resources.open_text(json_data, jsonfile+'.json') as json_file:
