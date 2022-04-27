@@ -303,7 +303,7 @@ class WorldState:
             string that contains the PDDL representation of the worldstate
         """
         string = "(define (problem currentEnvironment)\n"
-        string += "\t(:domain %s)\n" % (self.__domain.name)
+        string += "\t(:domain %s)\n" % (self.__domain.domain_name)
         string += "\t(:objects\n"
         for item in self.__entities:
             string += "%s\n" % (item.to_PDDL())

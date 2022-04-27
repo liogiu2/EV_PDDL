@@ -3,6 +3,21 @@ from ev_pddl.types import Type
 
 class Domain:
 
+    """
+    Class that is used to define the domain of the current environment.
+
+    Attributes
+    ----------
+    domain_name : str
+        The name of the domain
+    types : list
+        The list of types
+    predicates : list
+        The list of predicates
+    actions : list
+        The list of actions
+    """
+
     def __init__(self, name = ''):
         self.__domain_name = name
         self.__types = []
