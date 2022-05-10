@@ -8,11 +8,11 @@ class ActionDefinition:
 
     def __str__(self):
         string = 'action: ' + self.name 
-        string +='\n\t  parameters: '
+        string +='\n      parameters: '
         for item in self.parameters:
             string += str(item)
-        string +='\n\t  preconditions: ' + str(self.preconditions)
-        string +='\n\t  effects: ' + str(self.effects) + '\n'
+        string +='\n      preconditions: ' + str(self.preconditions)
+        string +='\n      effects: ' + str(self.effects) + '\n'
         return string
 
     def __eq__(self, other): 
@@ -34,14 +34,14 @@ class ActionDefinition:
         """
         This method is used to create the PDDL representation of the Action
         """
-        string = '\t(:action ' + self.name + '\n'
-        string += '\t\t:parameters ('
+        string = '    (:action ' + self.name + '\n'
+        string += '        :parameters ('
         for item in self.parameters:
             string += item.to_PDDL() + " "
         string += ')\n'
-        string += '\t\t:precondition ' + self.preconditions.to_PDDL() + '\n'
-        string += '\t\t:effect ' + self.effects.to_PDDL() + '\n'
-        string += '\t)\n'
+        string += '        :precondition ' + self.preconditions.to_PDDL() + '\n'
+        string += '        :effect ' + self.effects.to_PDDL() + '\n'
+        string += '    )\n'
         return string
 
 

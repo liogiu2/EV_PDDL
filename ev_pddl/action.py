@@ -152,12 +152,12 @@ class Action:
         # (can_open alchemyshop.Chest = TRUE))\n
         # :effect (and (is_open alchemyshop.Chest = TRUE))\n'
         return_string = ":action %s\n"%(self.name)
-        return_string += ":parameters ("
+        return_string += "        :parameters ("
         for item in self.__parameters.keys():
             return_string += "%s "%(self.__parameters[item].to_PDDL())
         return_string += ")\n"
-        return_string += ":precondition %s\n"%(self.__preconditions.to_PDDL())
-        return_string += ":effect %s\n"%(self.__effects.to_PDDL())
+        return_string += "        :precondition %s\n"%(self.__preconditions.to_PDDL())
+        return_string += "        :effect %s\n"%(self.__effects.to_PDDL())
         return return_string
     
     # @classmethod

@@ -172,13 +172,13 @@ class Domain:
         string = "Domain Name: %s" %(self.domain_name) + '\n' 
         string += 'Types: \n'
         for item in self.types:
-            string +='\t'+ str(item) + '\n'
+            string +='    '+ str(item) + '\n'
         string += 'Predicates: \n'
         for item in self.predicates:
-            string += '\t' + str(item) + '\n'
+            string += '    ' + str(item) + '\n'
         string += 'Actions: \n'
         for item in self.actions:
-            string += '\t' + str(item) + '\n'
+            string += '    ' + str(item) + '\n'
         return string
     
     def __eq__(self, other):
@@ -199,16 +199,14 @@ class Domain:
             The PDDL representation of the Domain
         """
         string = '(define (domain ' + self.domain_name + ')\n'
-        string += '\t(:requirements :typing :negative-preconditions :universal-preconditions)\n'
+        string += '    (:requirements :typing :negative-preconditions :universal-preconditions)\n'
         string += self._get_types_for_PDDL()
-        string += '\t' + '(:predicates ' + '\n'
+        string += '    ' + '(:predicates ' + '\n'
         for item in self.predicates:
-            string += '\t\t' + item.to_PDDL() + '\n'
-        string += '\t)\n'
-        string += '\t' + ':(actions ' + '\n'
+            string += '        ' + item.to_PDDL() + '\n'
+        string += '    )\n'
         for item in self.actions:
-            string += '\t\t' + item.to_PDDL() + '\n'
-        string += '\t)\n'
+            string += '        ' + item.to_PDDL() + '\n'
         string += ')'
         return string
     
@@ -238,13 +236,15 @@ class Domain:
                 previous_type = type_ext
         # Remove keys with empy list as value
         dict_types_new = {k:v for k,v in dict_types.items() if len(v) > 0}
-        string += '\t(:types\n'
+        string += '    (:types\n    '
         for key, value in dict_types_new.items():
             for item in value:
                 string += item + ' '
             if key != 'object':
                 string += '- ' + key
-            string += '\n'
+            else:
+                string = string[:-1]
+            string += '\n    '
         string += ')\n'
 
         return string

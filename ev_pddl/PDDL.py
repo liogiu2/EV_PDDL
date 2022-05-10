@@ -20,14 +20,47 @@ class PDDL_Parser:
     # Tokens
     # ------------------------------------------
 
-    def scan_tokens(self, filename):
-        with open(filename,'r') as f:
-            # Remove single line comments
-            str = re.sub(r';.*$', '', f.read(), flags=re.MULTILINE).lower()
+    def scan_tokens(self, filename = None, string = None):
+        """
+        This method is used to create the tokens to read a PDDL file. It can accept one between filename or domain_str.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to read.
+        domain_str : str
+            The string to read.
+        
+        Returns
+        -------
+        list
+            The list of tokens.
+        """
+        if filename is not None:
+            with open(filename,'r') as f:
+                # Remove single line comments
+                str = re.sub(r';.*$', '', f.read(), flags=re.MULTILINE).lower()
+        elif string is not None:
+            str = re.sub(r';.*$', '', string, flags=re.MULTILINE).lower()
         # Tokenize
         return self._tokenize(str)
     
     def _tokenize(self, str, skip_malformed_expression = False):
+        """
+        This method is used to do the parsing of the PDDL file.
+
+        Parameters
+        ----------
+        str : str
+            The string to parse.
+        skip_malformed_expression : bool
+            If True, it will skip malformed expressions.
+        
+        Returns
+        -------
+        list
+            The list of tokens.
+        """
         stack = []
         list = []
         current = ''
@@ -65,8 +98,26 @@ class PDDL_Parser:
     # Parse domain
     #-----------------------------------------------
 
-    def parse_domain(self, domain_filename):
-        tokens = self.scan_tokens(domain_filename)
+    def parse_domain(self, domain_filename : str = None, domain_str : str = None):
+        """
+        This method is used to parse a PDDL domain file. It can accept one between filename or domain_str.
+
+        Parameters
+        ----------
+        domain_filename : str
+            The name of the file to read.
+        domain_str : str
+            The string to read representing the domain file content.
+
+        Returns
+        -------
+        Domain
+            The domain object.
+        """
+        if domain_filename is not None:
+            tokens = self.scan_tokens(filename = domain_filename)
+        elif domain_str is not None:
+            tokens = self.scan_tokens(string = domain_str)
         if type(tokens) is list and tokens.pop(0) == 'define':
             self.actions = []
             self.types = []
@@ -207,8 +258,26 @@ class PDDL_Parser:
     # Parse problem
     #-----------------------------------------------
 
-    def parse_problem(self, problem_filename):
-        tokens = self.scan_tokens(problem_filename)
+    def parse_problem(self, problem_filename = None, problem_str = None):
+        """
+        This method is used to parse a problem file. It can accept a problem_filename or a problem_str.
+
+        Parameters
+        ----------
+        problem_filename : str
+            The problem filename.
+        problem_str : str
+            The problem string.
+        
+        Returns
+        -------
+        problem : Problem
+            The parsed problem.
+        """
+        if problem_filename is not None:
+            tokens = self.scan_tokens(filename = problem_filename)
+        elif problem_str is not None:
+            tokens = self.scan_tokens(string = problem_str)
         if type(tokens) is list and tokens.pop(0) == 'define':
             self.problem_name = 'unknown'
             self.objects = []
@@ -241,7 +310,13 @@ class PDDL_Parser:
     def parse_relations(self, group):
         while group:
             item = group.pop(0)
-            pred = self.domain.find_predicate(item.pop(0))
+            var = item.pop(0)
+            if var == 'not':
+                value = RelationValue.FALSE
+                var = item.pop(0)
+            else:
+                value = RelationValue.TRUE
+            pred = self.domain.find_predicate(var)
             entities = []
             while item:
                 i = item.pop(0)
@@ -249,7 +324,7 @@ class PDDL_Parser:
                 if ent is None:
                     raise Exception('Couldn\'t find object %s'%(i))
                 entities.append(ent)
-            self.starting_state.append(Relation(pred, entities, RelationValue.TRUE, self.domain, self.problem))
+            self.starting_state.append(Relation(pred, entities, value, self.domain, self.problem))
     #-----------------------------------------------
     # Split propositions
     #-----------------------------------------------

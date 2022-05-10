@@ -46,7 +46,7 @@ class ActionProposition:
         String
             PDDL representation of the action
         """
-        return_string = ""
+        return_string = "        "
         if self.name == 'forall':
             return_string += "( forall ("
             return_string += self.argument.name+ " - " +self.argument.type.name +')'

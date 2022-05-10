@@ -70,12 +70,12 @@ class Problem:
     def __str__(self) -> str:
         string = "Problem name: %s "%(self.problem_name)
         string += "Associated Domain name: %s\n"%(self.domain.domain_name)
-        string += "Objects: \n\t"
+        string += "Objects: \n    "
         for item in self.objects:
             string += "%s, "%(str(item))
         string += "\nInitial State: \n"
         for item in self.initial_state:
-            string += "\t%s\n "%(str(item))
+            string += "    %s\n "%(str(item))
         return string
     
     def find_objects_with_type(self, type_e, exclude_types = []):

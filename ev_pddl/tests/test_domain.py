@@ -1,3 +1,4 @@
+from fileinput import filename
 import unittest
 
 import sys
@@ -9,8 +10,8 @@ class TestDomain(unittest.TestCase):
 
     def _initialize(self):
         self.parser = PDDL_Parser()
-        self.domain = self.parser.parse_domain('tests/camelot_domain.pddl')
-        self.problem = self.parser.parse_problem('tests/example_problem.pddl')
+        self.domain = self.parser.parse_domain(filename = 'tests/camelot_domain.pddl')
+        self.problem = self.parser.parse_problem(filename = 'tests/example_problem.pddl')
 
     def test_dict_types(self):
         self._initialize()

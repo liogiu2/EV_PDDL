@@ -286,12 +286,12 @@ class WorldState:
         return return_list
 
     def __str__(self) -> str:
-        string = "entities: \n\t"
+        string = "entities: \n    "
         for item in self.__entities:
             string += "%s, " % (str(item))
         string += "\nRelations: \n"
         for item in self.__relations:
-            string += "\t%s\n " % (str(item))
+            string += "    %s\n " % (str(item))
         return string
     
     def to_PDDL(self) -> str:
@@ -303,16 +303,16 @@ class WorldState:
             string that contains the PDDL representation of the worldstate
         """
         string = "(define (problem currentEnvironment)\n"
-        string += "\t(:domain %s)\n" % (self.__domain.domain_name)
-        string += "\t(:objects\n"
+        string += "    (:domain %s)\n" % (self.__domain.domain_name)
+        string += "    (:objects\n"
         for item in self.__entities:
-            string += "%s\n" % (item.to_PDDL())
+            string += "        %s\n" % (item.to_PDDL())
         string += ")\n"
-        string += "\t(:init\n"
+        string += "    (:init\n"
         for item in self.__relations:
-            string += "%s\n" % (item.to_PDDL())
-        string += "\t)\n"
-        string += "\t(:goal\n"
-        string += "\t)\n"
+            string += "        %s\n" % (item.to_PDDL())
+        string += "    )\n"
+        string += "    (:goal\n"
+        string += "    )\n"
         string += ")"
         return string
