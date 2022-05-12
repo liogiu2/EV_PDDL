@@ -98,7 +98,7 @@ class PDDL_Parser:
     # Parse domain
     #-----------------------------------------------
 
-    def parse_domain(self, domain_filename : str = None, domain_str : str = None):
+    def parse_domain(self, domain_filename : str = None, domain_str : str = None) -> Domain:
         """
         This method is used to parse a PDDL domain file. It can accept one between filename or domain_str.
 
@@ -258,7 +258,7 @@ class PDDL_Parser:
     # Parse problem
     #-----------------------------------------------
 
-    def parse_problem(self, problem_filename = None, problem_str = None):
+    def parse_problem(self, problem_filename = None, problem_str = None) -> Problem:
         """
         This method is used to parse a problem file. It can accept a problem_filename or a problem_str.
 

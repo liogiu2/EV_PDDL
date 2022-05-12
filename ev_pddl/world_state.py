@@ -5,6 +5,8 @@ from ev_pddl.action import Action
 from ev_pddl.relation import Relation
 from ev_pddl.entity import Entity
 import logging
+import copy
+from ev_pddl.relation_value import RelationValue
 
 
 class WorldState:
@@ -20,7 +22,7 @@ class WorldState:
     
     """
 
-    def __init__(self, domain: Domain):
+    def __init__(self, domain: Domain = None):
         self.__domain = domain
         self.__relations = []
         self.__entities = []
@@ -52,6 +54,23 @@ class WorldState:
 
         """
         self.__relations = relations
+    
+    def create_worldstate_from_problem(self, problem, domain):
+        """
+        This method is used to create a worlstate from a PDDL problem.
+
+        Parameters
+        ----------
+        problem : Problem
+            problem that needs to be converted to a worldstate
+        domain : Domain
+            domain that the problem belongs to
+        """
+        self.__domain = domain
+        for item in problem.objects:
+            self.add_entity(item)
+        for item in problem.initial_state:
+            self.add_relation(item)
 
     def add_relation(self, relation: Relation):
         """A method that is used to add a relation to the current worldstate
@@ -139,6 +158,20 @@ class WorldState:
                         return item
         return None
 
+    def find_entities_with_type(self, type: str) -> list:
+        """A method that is used to find all the entities with a specific type.
+
+        Parameters
+        ----------
+        type : str
+            type that needs to be found
+        """
+        return_list = []
+        for item in self.__entities:
+            if type in item.type.get_list_extensions():
+                return_list.append(item)
+        return return_list
+
     def get_dict_predicates(self) -> dict:
         """A method that is used to return a dict with all the predicates listed inside the domain
 
@@ -167,7 +200,7 @@ class WorldState:
                 return item
         return None
 
-    def can_action_be_applied(self, action: Action) -> bool:
+    def can_action_be_applied(self, action: Action, return_reason : bool = False):
         """A method that is used to check if an action can be applied to the current worldstate
 
         This method checks the precondition of the action in the current worldstate and returns True if the action can be applied, False otherwise.
@@ -176,8 +209,9 @@ class WorldState:
         action : type Action
             action to be checked if it can be applied
         """
-        result = self._check_precondition_recursive(action.preconditions)
-
+        result, reason = self._check_precondition_recursive(action.preconditions)
+        if return_reason:
+            return result, reason
         return result
 
     def _check_precondition_recursive(self, action_proposition: ActionProposition):
@@ -193,20 +227,22 @@ class WorldState:
             for item in action_proposition.parameters:
                 if type(item) == Relation:
                     if self.find_relation(item) is None:
-                        return False
+                        return False, "Relation %s is not in the worldstate" % str(item)
                 elif type(item) == ActionProposition:
-                    if self._check_precondition_recursive(item) == False:
-                        return False
-            return True
+                    result, reason = self._check_precondition_recursive(item)
+                    if result == False:
+                        return False, reason
+            return True, None
         elif action_proposition.name == 'or':
             for item in action_proposition.parameters:
                 if type(item) == Relation:
                     if self.find_relation(item) is not None:
-                        return True
+                        return True, None
                 elif type(item) == ActionProposition:
-                    if self._check_precondition_recursive(item) == True:
-                        return True
-            return False
+                    result, reason = self._check_precondition_recursive(item)
+                    if result == True:
+                        return True, reason
+            return False, "No precondition was met in " + str(action_proposition)
         elif action_proposition.name == 'forall':
             # TODO: forall precondition check
             pass
@@ -251,9 +287,10 @@ class WorldState:
 
             if worldstate_relation is None:
                 self.add_relation(relation)
+                changed_relations.append(('new', copy.deepcopy(relation)))
             else:
                 worldstate_relation.modify_value(relation.value)
-            changed_relations.append(relation)
+                changed_relations.append(('changed_value', copy.deepcopy(relation)))          
         return changed_relations
 
     def get_entity_relations(self, entity: Entity, predicates=None, value_list = None) -> list:
@@ -284,6 +321,38 @@ class WorldState:
                     if item.predicate in predicates:
                         return_list.append(item)
         return return_list
+    
+    def add_relation_from_PDDL(self, PDDL_instruction : str):
+        """A method that is used to add a relation from a PDDL instruction.
+
+        Parameters
+        ----------
+        PDDL_instruction : str
+            PDDL instruction that we want to add to the worldstate
+        """
+        self.add_relation(self.create_relation_from_PDDL(PDDL_instruction))
+    
+    def create_relation_from_PDDL(self, PDDL_instruction : str) -> Relation:
+        """A method that is used to create a relation from a PDDL instruction.
+        
+        Parameters
+        ----------
+        PDDL_instruction : str
+            PDDL instruction that we want to create a relation from
+        """
+        PDDL_instruction = PDDL_instruction.replace('(', '').replace(')', '').strip()
+        PDDL_instruction_parts = PDDL_instruction.split(' ')
+        if PDDL_instruction_parts[0] == 'not':
+            value = RelationValue.FALSE
+            PDDL_instruction_parts.pop(0)
+        else:
+            value = RelationValue.TRUE
+        predicate = self.__domain.find_predicate(PDDL_instruction_parts.pop(0))
+        entities = []
+        for entity in PDDL_instruction_parts:
+            entities.append(self.find_entity(name = entity))
+        return Relation(predicate, entities, value)
+
 
     def __str__(self) -> str:
         string = "entities: \n    "

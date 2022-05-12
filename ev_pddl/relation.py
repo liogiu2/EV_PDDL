@@ -117,7 +117,7 @@ class Relation:
         string: str
             The PDDL string of the relation.
         """
-        string = "(" 
+        string = "        (" 
         if self.value == RelationValue.FALSE:
             string += "not "
         string += self.predicate.name + " "

@@ -159,24 +159,6 @@ class Action:
         return_string += "        :precondition %s\n"%(self.__preconditions.to_PDDL())
         return_string += "        :effect %s\n"%(self.__effects.to_PDDL())
         return return_string
-    
-    # @classmethod
-    # def from_PDDL(cls, action_string):
-    #     """A method that is used to transform a PDDL action to an action
-
-    #     Parameters
-    #     ----------
-    #     action_string : String
-    #         PDDL representation of the action
-
-    #     Returns
-    #     -------
-    #     Action
-    #         Action object
-    #     """
-    #     dict_action_components = PDDL_Parser(nodomain=True).parse_incoming_action(action_string)
-
-    #     return None
 
     def find_parameters_with_type(self, type):
         """
@@ -193,5 +175,20 @@ class Action:
             List of the entity that has the type
         """
         return_list = [self.__parameters[item] for item in self.__parameters.keys() if type in self.__parameters[item].type.get_list_extensions()]
-        return return_list       
+        return return_list     
+
+    def get_string_execution(self) -> str:
+        """
+        This method is used to get the string representation of the action that can be send to the environment to be executed
+
+        Returns
+        -------
+        str:
+            String representation of the action
+        """  
+        return_string = "%s("%(self.name)
+        for item in self.__parameters.keys():
+            return_string += "%s, "%(self.__parameters[item].name)
+        return_string = return_string[:-2] + ")"
+        return return_string
     
