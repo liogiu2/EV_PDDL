@@ -1,10 +1,11 @@
 class ActionDefinition:
 
-    def __init__(self, name, parameters, preconditions, effects):
+    def __init__(self, name, parameters, preconditions, effects, available = True):
         self.name = name
         self.parameters = parameters
         self.preconditions = preconditions
         self.effects = effects
+        self.available = available
 
     def __str__(self):
         string = 'action: ' + self.name 
@@ -34,6 +35,9 @@ class ActionDefinition:
         """
         This method is used to create the PDDL representation of the Action
         """
+        if self.available == False:
+            return ''
+            
         string = '    (:action ' + self.name + '\n'
         string += '        :parameters ('
         for item in self.parameters:

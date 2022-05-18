@@ -26,6 +26,7 @@ class Action:
         self.__parameters = {}
         self.__preconditions = None
         self.__effects = None
+        self.__available = True
         self.create_action(self._action_definition, parameters)
     
     #-----------------------------------
@@ -64,6 +65,23 @@ class Action:
         Getter for the preconditions of the action
         """
         return self.__effects
+
+    #-----------------------------------
+    #       available methods
+    #-----------------------------------
+    @property
+    def available(self):
+        """
+        Getter for the preconditions of the action
+        """
+        return self.__available
+    
+    @available.setter
+    def available(self, value : bool):
+        """
+        Setter for the available attribute
+        """
+        self.__available = value
     
     #-----------------------------------
     #       Other methods
@@ -151,6 +169,9 @@ class Action:
         # (is_open alchemyshop.Chest = FALSE)
         # (can_open alchemyshop.Chest = TRUE))\n
         # :effect (and (is_open alchemyshop.Chest = TRUE))\n'
+        if self.__available == False:
+            return ""
+
         return_string = ":action %s\n"%(self.name)
         return_string += "        :parameters ("
         for item in self.__parameters.keys():
