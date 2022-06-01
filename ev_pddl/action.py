@@ -209,7 +209,10 @@ class Action:
         """  
         return_string = "%s("%(self.name)
         for item in self.__parameters.keys():
-            return_string += "%s, "%(self.__parameters[item].name)
+            if self.name.startswith("instantiate_") and type(self.__parameters[item]) == str:
+                return_string += "%s, "%(self.__parameters[item])
+            else:
+                return_string += "%s, "%(self.__parameters[item].name)
         return_string = return_string[:-2] + ")"
         return return_string
     

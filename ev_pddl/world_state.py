@@ -352,6 +352,30 @@ class WorldState:
         for entity in PDDL_instruction_parts:
             entities.append(self.find_entity(name = entity))
         return Relation(predicate, entities, value)
+    
+    def add_entity_from_PDDL(self, PDDL_instruction : str):
+        """A method that is used to add an entity from a PDDL instruction.
+
+        Parameters
+        ----------
+        PDDL_instruction : str
+            PDDL instruction that we want to add to the worldstate
+        """
+        self.add_entity(self.create_entity_from_PDDL(PDDL_instruction))
+    
+    def create_entity_from_PDDL(self, PDDL_instruction : str) -> Entity:
+        """A method that is used to create an entity from a PDDL instruction.
+        
+        Parameters
+        ----------
+        PDDL_instruction : str
+            PDDL instruction that we want to create an entity from
+        """
+        PDDL_instruction = PDDL_instruction.replace(' - ', ' ').strip()
+        PDDL_instruction_parts = PDDL_instruction.split(' ')
+        entity_name = PDDL_instruction_parts.pop(0)
+        entity_type = self.__domain.find_type(PDDL_instruction_parts.pop(0))
+        return Entity(entity_name, entity_type)
 
 
     def __str__(self) -> str:
