@@ -24,12 +24,14 @@
         (can_close ?furniture - furniture) 
         (has_surface ?furniture - furniture)
         (stored ?item - item ?furniture - furniture)
+        (has_item_in_pocket ?character - character ?item - item)
     )
 
     ; Camelot Action: 
     ; Parameters:
     ; Preconditions:
     ; Effects: 
+    ; Example: move-between-location(luca, Blacksmith, AlchemyShop, Blacksmith.Door, AlchemyShop.Door)
     (:action move-between-location
         :parameters (?who - character ?from ?to - location ?entryfrom ?entryto - entrypoint)
         :precondition (and (in ?who ?from) 
@@ -49,13 +51,11 @@
     ; Preconditions:
     ; Effects: 
     (:action move-within-location
-        :parameters (?who -character
-            ?from ?to - position)
-        :precondition (and (at ?who ?from) 
+        :parameters (?who -character ?to - position ?loc - location)
+        :precondition (and (at ?to ?loc) 
             (alive ?who)
         )
         :effect (and (at ?who ?to)
-            (not (at ?who ?from))
         )
     )
     
@@ -323,12 +323,12 @@
     ;               giver does NOT have the item equipped anymore
     ;               receiver equips the item
     (:action give
-        :parameters (?giver ?receiver - character ?item - item ?l - position)
+        :parameters (?giver ?receiver - character ?item - item ?l - location)
         :precondition (and (alive ?giver) 
             (alive ?receiver)
             (equip ?item ?giver) 
-            (at ?giver ?l) 
-            (at ?receiver ?l)
+            (in ?giver ?l) 
+            (in ?receiver ?l)
         )
         :effect (and (not (equip ?item ?giver)) (equip ?item ?receiver))
     )
@@ -363,9 +363,10 @@
     ; Effects:
     ;               furniture is is_open
     (:action openfurniture
-        :parameters (?character - character ?furniture - furniture ?position - position)
+        :parameters (?character - character ?furniture - furniture ?position - location)
         :precondition (and (alive ?character)
-            (at ?character ?position) 
+            (in ?character ?position) 
+            (at ?furniture ?position)
             (not(is_open ?furniture)) 
             (can_open ?furniture)
         )
@@ -399,9 +400,6 @@
                 (at ?furniture ?position) 
                 (at ?character ?position) 
                 (stored ?item ?furniture)
-                (forall (?characters - character) 
-                    (not(equip ?item ?characters))
-                )
                 (or
                     (has_surface ?furniture)
                     (and 
@@ -423,11 +421,47 @@
     ; Effects:
     ;               
     (:action pocket
-        :parameters ()
-        :precondition (and )
-        :effect (and )
+        :parameters (?character - character ?item - item)
+        :precondition (and 
+            (alive ?character)
+            (equip ?item ?character)
+        )
+        :effect (and 
+            (not (equip ?item ?character))
+            (has_item_in_pocket ?character ?item)
+        )
+    )
+
+    (:action unpocket
+        :parameters (?character - character ?item - item)
+        :precondition (and 
+            (alive ?character)
+            (has_item_in_pocket ?character ?item)
+        )
+        :effect (and 
+            (not (has_item_in_pocket ?character ?item))
+            (equip ?item ?character)
+        )
+    )
+
+    (:action revive
+        :parameters (?character - character)
+        :precondition (and 
+            (not (alive ?character))
+        )
+        :effect (and 
+            (alive ?character)
+        )
     )
     
+    (:action instantiate_object_in_furniture
+        :parameters (?obj - item ?into - location ?furniture - furniture)
+        :precondition ( and 
+            (at ?furniture ?into))
+        :effect (and
+            (in ?obj ?into)
+            (stored ?obj ?furniture) )
+    )
     
     
 )
