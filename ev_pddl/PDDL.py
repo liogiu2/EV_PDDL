@@ -134,8 +134,11 @@ class PDDL_Parser:
                     self.parse_predicates(group)
                 elif t == ':types':
                     self.parse_types_and_objects(group, 'types')
-                elif t == ':action':
-                    self.parse_action(group)
+                elif t in (':action', ':special-action'):
+                    if t == ':special-action':
+                        self.parse_action(group, special_action = True)
+                    else:
+                        self.parse_action(group)
                     self.domain.actions = self.actions
                 else: print(str(t) + ' is not recognized in domain')
         else:
@@ -231,7 +234,7 @@ class PDDL_Parser:
     # Parse action
     #-----------------------------------------------
 
-    def parse_action(self, group): #TODO: check predicates
+    def parse_action(self, group, special_action = False): #TODO: check predicates
         name = group.pop(0)
         if not type(name) is str:
             raise Exception('Action without name definition')
@@ -252,7 +255,7 @@ class PDDL_Parser:
             elif t == ':effect':
                 effects = self.split_propositions(group.pop(0),  name, ':effects', action_parameters)
             else: print(str(t) + ' is not recognized in action')
-        self.actions.append(ActionDefinition(name, action_parameters, preconditions, effects))
+        self.actions.append(ActionDefinition(name, action_parameters, preconditions, effects, special_action=special_action))
 
     #-----------------------------------------------
     # Parse problem

@@ -23,6 +23,7 @@ class Action:
     def __init__(self, action_definition, parameters):
         self._action_definition = action_definition
         self.name = action_definition.name
+        self.special_action = False
         self.__parameters = {}
         self.__preconditions = None
         self.__effects = None
@@ -97,6 +98,8 @@ class Action:
         parameters : dict
             the parameters that need to be sobstituted from the action_definition
         """
+        if action_definition.special_action:
+            self.special_action = True
         #Cheking action_definition parameters with dict of parameters passed in the method to be sobstitute in the action
         for param in action_definition.parameters:
             if param.name in parameters.keys():
@@ -171,8 +174,10 @@ class Action:
         # :effect (and (is_open alchemyshop.Chest = TRUE))\n'
         if self.__available == False:
             return ""
-
-        return_string = ":action %s\n"%(self.name)
+        if self.special_action:
+            return_string = ":special-action %s\n"%(self.name)
+        else:
+            return_string = ":action %s\n"%(self.name)
         return_string += "        :parameters ("
         for item in self.__parameters.keys():
             return_string += "%s "%(self.__parameters[item].to_PDDL())

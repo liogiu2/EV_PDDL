@@ -1,11 +1,12 @@
 class ActionDefinition:
 
-    def __init__(self, name, parameters, preconditions, effects, available = True):
+    def __init__(self, name, parameters, preconditions, effects, available = True, special_action = False):
         self.name = name
         self.parameters = parameters
         self.preconditions = preconditions
         self.effects = effects
         self.available = available
+        self.special_action = special_action
 
     def __str__(self):
         string = 'action: ' + self.name 
@@ -37,8 +38,11 @@ class ActionDefinition:
         """
         if self.available == False:
             return ''
-            
-        string = '    (:action ' + self.name + '\n'
+
+        if self.special_action:
+            string = '    (:special-action ' + self.name + '\n'  
+        else:
+            string = '    (:action ' + self.name + '\n'
         string += '        :parameters ('
         for item in self.parameters:
             string += item.to_PDDL() + " "
