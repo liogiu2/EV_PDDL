@@ -4,6 +4,7 @@ from ev_pddl.action_proposition import ActionProposition
 from ev_pddl.action import Action
 from ev_pddl.relation import Relation
 from ev_pddl.entity import Entity
+from ev_pddl.PDDL import PDDL_Parser
 import logging
 import copy
 from ev_pddl.relation_value import RelationValue
@@ -386,6 +387,53 @@ class WorldState:
         for item in self.__relations:
             string += "    %s\n " % (str(item))
         return string
+    
+    def create_action_proposition_from_PDDL(self, PDDL_instruction : str) -> ActionProposition:
+        """A method that is used to create an action proposition from a PDDL instruction.
+        
+        Parameters
+        ----------
+        PDDL_instruction : str
+            PDDL instruction that we want to create an action proposition from
+        """
+        #(and (in luca City) (in bob City) (alive bob) (alive luca))
+        tokens = PDDL_Parser().scan_tokens(string = PDDL_instruction)
+        preconditions = self._evaluate_proposition_recursive(tokens)
+        return preconditions
+
+    def _evaluate_proposition_recursive(self, tokens):
+        """A method that is used to evaluate a proposition recursively and transform it to ActionProposition and Relations.
+        This method should be used to transform a PDDL proposition to an ActionProposition with relations.
+
+        Parameters
+        ----------
+        tokens : list
+            list of tokens that we want to evaluate
+        """
+        proposition = tokens.pop(0)
+        if proposition == 'and':
+            action_prop = ActionProposition('and', [])
+            lenght = int(len(tokens))
+            for _ in range(lenght):
+                action_prop.add_parameter(self._evaluate_proposition_recursive(tokens))
+            return action_prop
+        elif proposition == 'or':
+            action_prop = ActionProposition('or', [])
+            lenght = int(len(tokens))
+            for _ in range(lenght):
+                action_prop.add_parameter(self._evaluate_proposition_recursive(tokens))
+            return action_prop
+        elif proposition == 'not':
+            action_prop = ActionProposition('not', [])
+            action_prop.add_parameter(self._evaluate_proposition_recursive(tokens))
+            return action_prop
+        elif type(proposition) == list:
+            predicate = self.__domain.find_predicate(proposition[0])
+            entities = []
+            for entity in proposition[1:]:
+                entities.append(self.find_entity(name = entity))
+            relation = Relation(predicate, entities, RelationValue.TRUE)
+            return relation
     
     def to_PDDL(self) -> str:
         """A method that is used to convert the worldstate to PDDL.
