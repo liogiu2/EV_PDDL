@@ -64,7 +64,7 @@ class Domain:
     #-----------------------------------
 
     @property
-    def actions(self):
+    def actions(self) -> list:
         """
         Getter for the actions of the domain
         """

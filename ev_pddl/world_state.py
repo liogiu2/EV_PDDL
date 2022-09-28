@@ -210,12 +210,12 @@ class WorldState:
         action : type Action
             action to be checked if it can be applied
         """
-        result, reason = self._check_precondition_recursive(action.preconditions)
+        result, reason = self.check_precondition_recursive(action.preconditions)
         if return_reason:
             return result, reason
         return result
 
-    def _check_precondition_recursive(self, action_proposition: ActionProposition):
+    def check_precondition_recursive(self, action_proposition: ActionProposition):
         """A method that is used to check if the preconditions of the action can be applied to the worldstate. 
         Recursive method.
 
@@ -230,7 +230,7 @@ class WorldState:
                     if self.find_relation(item) is None:
                         return False, "Relation %s is not in the worldstate" % str(item)
                 elif type(item) == ActionProposition:
-                    result, reason = self._check_precondition_recursive(item)
+                    result, reason = self.check_precondition_recursive(item)
                     if result == False:
                         return False, reason
             return True, None
@@ -240,7 +240,7 @@ class WorldState:
                     if self.find_relation(item) is not None:
                         return True, None
                 elif type(item) == ActionProposition:
-                    result, reason = self._check_precondition_recursive(item)
+                    result, reason = self.check_precondition_recursive(item)
                     if result == True:
                         return True, reason
             return False, "No precondition was met in " + str(action_proposition)
