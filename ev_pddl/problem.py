@@ -28,15 +28,30 @@ class Problem:
         """
         self.__objects = objects
     
-    def add_object(self, obj):
-        if self.find_objects(obj.name) is not None:
+    def add_object(self, obj, check_duplicates = True):
+        """
+        Method that adds an entity to the problem. It checks if the entity is already in the problem and if it is not it adds it.
+
+        Parameters
+        ----------
+        obj : Entity
+            The entity to add
+        check_duplicates : bool, optional
+            If true it checks if the entity is already in the problem, by default True
+        """
+        if check_duplicates and self.find_objects(obj.name) is not None:
             raise AttributeError('Object %s in the problem already exists'%(obj.name))
         self.__objects.append(obj)
     
-    def find_objects(self, obj_name):
-        # if '.' in obj_name:
-        #     obj_name = '.'.join(map(lambda s: s.strip().capitalize(), obj_name.split('.')))
-        #     obj_name = obj_name[0].lower() + obj_name[1:]
+    def find_objects(self, obj_name : str):
+        """
+        Finds all objects with a given name in the problem
+
+        Parameters
+        ----------
+        obj_name : str
+            The name of the object to search for
+        """
         for item in self.__objects:
             if item.name.lower() == obj_name.lower():
                 return item
@@ -79,6 +94,16 @@ class Problem:
         return string
     
     def find_objects_with_type(self, type_e, exclude_types = []):
+        """
+        A method that is used to find all objects of a given type in the problem. It checks also in the extesions list of the type.
+
+        Parameters
+        ----------
+        type_e : Type
+            The type to search for
+        exclude_types : list, optional
+            A list of types to exclude, by default []
+        """
         return_list = []
         for item in self.objects:
             if type_e in item.type.get_list_extensions():
